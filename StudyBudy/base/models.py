@@ -1,9 +1,18 @@
 from django.db import models
+from django.contrib.auth.models import Users
+
+
+class Topic(models.Model):
+    model = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
 
 
 class Room(models.Model):
     # host
-    # topic
+    # Especificando a relação entre room e topic
+    topic
     name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
     # participants
@@ -14,8 +23,10 @@ class Room(models.Model):
         return self.name
 
 
+# https://docs.djangoproject.com/en/4.0/ref/contrib/auth/
+
 class Message(models.Model):
-    # user =
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     # ForeignKey --> permite a conexão com outra classe
     # CASCADE --> quando deletado, deleta todos os descendentes
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
