@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -9,6 +11,10 @@ from .forms import RoomForm
 
 def loginPage(request):
     page = 'login'
+
+    if request.user.is_authenticated:
+        return redirect('home')
+
     if request.method == 'POST':
         username = request.POST.get('username').lower()
         password = request.POST.get('password')
@@ -40,6 +46,11 @@ def loginPage(request):
 def logoutUser(request):
     logout(request)
     return redirect('home')
+
+
+def registerUser(request):
+    page = 'register'
+    return render(request, 'base/login_register.html')
 
 
 def home(request):
@@ -76,6 +87,9 @@ def room(request, pk):
     return render(request, 'base/room.html', context)
 
 
+# @function --> permite registringir páginas de ter acesso
+# sem antes terem feito login
+@login_required(login_url="login")
 def createRoom(request):
     form = RoomForm()
     #  Se dermos um print no request.POST irá retornar
@@ -92,9 +106,14 @@ def createRoom(request):
     return render(request, 'base/room_form.html', context)
 
 
+@login_required(login_url="login")
 def updateRoom(request, pk):
     room = Room.objects.get(id=pk)
     form = RoomForm(instance=room)
+
+    # Permite bloquear o acesso ao usuário que não é dono do bloco
+    if request.user is not room.host:
+        return HttpResponse('You are not allowed here!')
 
     if request.method == 'POST':
         form = RoomForm(request.POST, instance=room)
@@ -106,8 +125,13 @@ def updateRoom(request, pk):
     return render(request, 'base/room_form.html', context)
 
 
+@login_required(login_url="login")
 def deleteRoom(request, pk):
     room = Room.objects.get(id=pk)
+
+    # Permite bloquear o acesso ao usuário que não é dono do bloco
+    if request.user is not room.host:
+        return HttpResponse('You are not allowed here!')
 
     if request.method == 'POST':
         room.delete()
