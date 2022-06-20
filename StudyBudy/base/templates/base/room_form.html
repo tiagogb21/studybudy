@@ -6,7 +6,9 @@
     <!-- https://docs.djangoproject.com/en/4.0/ref/csrf/ -->
     <!-- SEMPRE utilizar o csrf_token -->
     {% csrf_token %}
-    <!-- Para poder criar o formulário usamos form.as_p -->
+    <!-- Para poder criar o formulário usamos um shortcut
+    form.as_p, vai envolver uma tag p em torno de todo o
+    input que o form tem e renderizar no django-->
     {{form.as_p}}
     <input type="submit" value="Submit" />
   </form>
