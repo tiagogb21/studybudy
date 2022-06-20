@@ -4,6 +4,9 @@ from .models import Room, Topic
 from .forms import RoomForm
 
 
+def loginPage()
+
+
 def home(request):
     # Verificação para saber se está retornando algo
     q = request.GET.get('q') if request.GET.get('q') is not None else ''
