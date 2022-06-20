@@ -13,15 +13,15 @@ def home(request):
 
     # icontains: para ignorar se é maiúscula ou minúscula
     rooms = Room.objects.filter(
-        # Atenção! NÃO esquecer de usar double underscore
-        Q(topic__name__icontains=q) or
-        Q(name__icontains=q) or
+        Q(topic__name__icontains=q) |
+        Q(name__icontains=q) |
         Q(description__icontains=q)
     )
 
     topics = Topic.objects.all()
 
     context = {'rooms': rooms, 'topics': topics}
+
     return render(request, 'base/home.html', context)
 
 
