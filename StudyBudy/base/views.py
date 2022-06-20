@@ -1,18 +1,25 @@
 from django.shortcuts import render, redirect
+from django.db.models import Q
 from .models import Room, Topic
 from .forms import RoomForm
 
-# rooms = [
-#     {'id': 1, 'name': 'Lets learn python!'},
-#     {'id': 2, 'name': 'Design with me!'},
-#     {'id': 3, 'name': 'Frontend developers!'},
-# ]
-
 
 def home(request):
-    rooms = Room.objects.all()
+    # Verificação para saber se está retornando algo
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
 
-    topics = Topic.object.all()
+    # Queremos ter certeza que iremos encontrar o valor passado
+    # no topic name
+
+    # icontains: para ignorar se é maiúscula ou minúscula
+    rooms = Room.objects.filter(
+        # Atenção! NÃO esquecer de usar double underscore
+        Q(topic__name__icontains=q) or
+        Q(name__icontains=q) or
+        Q(description__icontains=q)
+    )
+
+    topics = Topic.objects.all()
 
     context = {'rooms': rooms, 'topics': topics}
     return render(request, 'base/home.html', context)
