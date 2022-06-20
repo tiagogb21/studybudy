@@ -48,9 +48,10 @@ def logoutUser(request):
     return redirect('home')
 
 
-def registerUser(request):
+def registerPage(request):
     page = 'register'
-    return render(request, 'base/login_register.html')
+    context = {'page': page}
+    return render(request, 'base/login_register.html', context)
 
 
 def home(request):
